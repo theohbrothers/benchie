@@ -18,7 +18,7 @@ passed() {
     echo 'pass' && pass=$( expr $pass + 1 ) && total=$( expr $total + 1 )
 }
 failed() {
-    echo 'failW' && fail=$( expr $fail + 1 ) && total=$( expr $total + 1 )
+    echo 'fail' && fail=$( expr $fail + 1 ) && total=$( expr $total + 1 )
 }
 
 
@@ -64,7 +64,7 @@ for bd in $BENCHMARK_DIR $BENCHMARK_DIR_REL; do
     echo "Expect an absolute path to benchmark data file"
     echo "$STDOUT" | grep -E "[a-zA-Z0-9_-]+.txt$" > /dev/null && passed || failed
     echo "Expect benchmark data directory to be clean"
-    ls test/my-benchmark/data/ | wc -l | grep -E '^0$' > /dev/null && passed || failed
+    ls test/my-benchmark/data/ | wc -l | awk '{print $1}' | grep -E '^0$' > /dev/null && passed || failed
 done
 
 ## Cleanup
