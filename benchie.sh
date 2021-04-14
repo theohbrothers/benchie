@@ -75,11 +75,16 @@ trim() {
 
 ## Declaration
 BASE_DIR=$( pwd )
-BENCHMARK_BASE_DIR=$( realpath "$BASE_DIR/$BENCHMARK" )
+BENCHMARK_BASE_DIR=$( realpath "$BENCHMARK" )
 if [ ! -d "$BENCHMARK_BASE_DIR" ]; then
-    echo "Could not find BENCHMARK_BASE_DIR: $BENCHMARK_BASE_DIR"
-    exit 1
+    # Try relative path
+    BENCHMARK_BASE_DIR=$( realpath "$BASE_DIR/$BENCHMARK" )
+    if [ ! -d "$BENCHMARK_BASE_DIR" ]; then
+        echo "Could not find BENCHMARK_BASE_DIR: $BENCHMARK_BASE_DIR"
+        exit 1
+    fi
 fi
+
 BENCHMARK_DATA_DIR="$BENCHMARK_BASE_DIR/data"
 BENCHMARK_COMMANDS_FILE="$BENCHMARK_BASE_DIR/commands"
 COMMAND=${COMMAND:-}
