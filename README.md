@@ -38,7 +38,13 @@ echo 'ping -W 1 192.168.0.1' >> client-network-latency/commands
 ./tools/benchie/benchie.sh status client-network-latency
 ```
 
-6. Clean benchmark data
+6. Commit benchmark data to your benchmark repo
+
+```sh
+git commit -am 'Add client-network-latency benchmark results'
+```
+
+7. Clean benchmark data
 
 ```sh
 ./tools/benchie/benchie.sh clean client-network-latency
