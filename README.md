@@ -4,25 +4,47 @@ A simple benchmarking tool.
 
 ## Usage
 
-1. Vendor the `benchie.sh` into `tools/` of a new repo.
+1. Vendor `benchie.sh` into your benchmark repo. E.g. `my-benchmarks`
 
 ```sh
-cd benchie-data
-mkdir -p tools
+cd my-benchmarks
+git submodule add https://github.com/theohbrothers/benchie tools/benchie
 ```
 
-1. Create a new benchmark
+2. Create a new benchmark. E.g. `client-network-latency`
 
 ```sh
-cd benchie-data
-mkdir -p my-benchmark
-echo 'ping -W 1 1.1.1.1' > my-benchmark/commands
-echo 'ping -W 1 192.168.0.1' >> my-benchmark/commands
+mkdir -p client-network-latency
+echo 'ping -W 1 1.1.1.1' > client-network-latency/commands
+echo 'ping -W 1 192.168.0.1' >> client-network-latency/commands
 ```
 
-1. Start benchmark
+3. Start benchmark
 
 ```sh
-cd benchie-data
-`./tools/benchie my-benchmark
+./tools/benchie/benchie.sh start client-network-latency <benchmark_label>
+# Benchmark data now in ./client-network-latency/data
 ```
+
+4. Get status of benchmark
+
+```sh
+./tools/benchie/benchie.sh status client-network-latency
+```
+
+5. Stop benchmark
+
+```sh
+./tools/benchie/benchie.sh status client-network-latency
+```
+
+6. Clean benchmark data
+
+```sh
+./tools/benchie/benchie.sh clean client-network-latency
+# Benchmark data removed in ./client-network-latency/data
+```
+
+## Notes
+
+Use `benchie.sh --help` for command line usage.
