@@ -1,0 +1,84 @@
+#!/bin/sh
+
+set -eu
+
+# Test env
+BASE_DIR=$( pwd )
+TEST_DIR_BASENAME='test'
+TEST_DIR="$BASE_DIR/$TEST_DIR_BASENAME"
+BENCHMARK="my-benchmark"
+BENCHMARK_DIR_REL="$TEST_DIR_BASENAME/$BENCHMARK"
+BENCHMARK_DIR="$TEST_DIR/$BENCHMARK"
+BENCHMARK_DATA_DIR="$TEST_DIR/$BENCHMARK/data"
+
+pass=0
+fail=0
+total=0
+passed() {
+    echo 'pass' && pass=$( expr $pass + 1 ) && total=$( expr $total + 1 )
+}
+failed() {
+    echo 'failW' && fail=$( expr $fail + 1 ) && total=$( expr $total + 1 )
+}
+
+
+#
+# Relative benchmark directory
+#
+
+echo
+TEST_STDOUT_FILE="$TEST_DIR/.stdout"
+echo "[Test start]"
+for bd in $BENCHMARK_DIR $BENCHMARK_DIR_REL; do
+    ./benchie.sh start "$bd" > "$TEST_STDOUT_FILE"
+    STDOUT=$( cat "$TEST_STDOUT_FILE" )
+    echo "Expect an absolute path to benchmark data file"
+    echo "$STDOUT" | grep -E "[a-zA-Z0-9_-]+.txt$" > /dev/null && passed || failed
+    echo "Expect benchmark data file exists"
+    echo "$STDOUT" | cat - > /dev/null && passed || failed
+    echo "Expect content of benchmark data file"
+    echo "$STDOUT" | cat - > /dev/null  && passed || failed
+
+    echo
+    echo "[Test status]"
+    ./benchie.sh status "$bd" > "$TEST_STDOUT_FILE"
+    STDOUT=$( cat "$TEST_STDOUT_FILE" )
+    echo "Expect a pid"
+    echo "$STDOUT" | grep -E "[0-9]+" > "$TEST_STDOUT_FILE" && passed || failed
+    echo "Expect pid to be running"
+    ps $STDOUT > /dev/null && passed || failed
+
+    echo
+    echo "[Test stop]"
+    ./benchie.sh stop "$bd" > "$TEST_STDOUT_FILE"
+    STDOUT=$( cat "$TEST_STDOUT_FILE" )
+    echo "Expect a pid"
+    echo "$STDOUT" | grep -E "[0-9]+" > "$TEST_STDOUT_FILE" && passed || failed
+    echo "Expect pid no longer exist"
+    ps $STDOUT > /dev/null && failed || passed
+
+    echo
+    echo "[Test clean]"
+    ./benchie.sh clean "$bd" > "$TEST_STDOUT_FILE"
+    STDOUT=$( cat "$TEST_STDOUT_FILE" )
+    echo "Expect an absolute path to benchmark data file"
+    echo "$STDOUT" | grep -E "[a-zA-Z0-9_-]+.txt$" > /dev/null && passed || failed
+    echo "Expect benchmark data directory to be clean"
+    ls test/my-benchmark/data/ | wc -l | grep -E '^0$' > /dev/null && passed || failed
+done
+
+## Cleanup
+rm -f "$TEST_STDOUT_FILE"
+
+echo
+echo "[Summary]"
+echo "Total: $total"
+echo "Pass: $pass"
+echo "Fail: $fail"
+if [ $fail -eq 0 ]; then
+    echo "Overall status: pass"
+    exit 0
+else
+    echo "Overall status: fail"
+    exit 1
+fi
