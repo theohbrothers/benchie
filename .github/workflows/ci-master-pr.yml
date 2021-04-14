@@ -1,0 +1,138 @@
+name: ci-master-pr
+
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+    branches:
+    - master
+
+jobs:
+  test-ubuntu-20-04:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Display system info (linux)
+      run: |
+        set -e
+        hostname
+        whoami
+        cat /etc/*release
+        lscpu
+        free
+        df -h
+        pwd
+        docker info
+        docker version
+    - name: Test
+      run: |
+        test/test.sh
+
+  test-ubuntu-18-04:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Display system info (linux)
+      run: |
+        set -e
+        hostname
+        whoami
+        cat /etc/*release
+        lscpu
+        free
+        df -h
+        pwd
+        docker info
+        docker version
+    - name: Test
+      run: |
+        test/test.sh
+
+  test-ubuntu-16-04:
+    runs-on: ubuntu-16.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Display system info (linux)
+      run: |
+        set -e
+        hostname
+        whoami
+        cat /etc/*release
+        lscpu
+        free
+        df -h
+        pwd
+        docker info
+        docker version
+    - name: Test
+      run: |
+        test/test.sh
+
+  test-macos-10-15:
+    runs-on: macos-10.15
+    steps:
+    - uses: actions/checkout@v2
+    - name: Display system info (macos)
+      run: |
+        set -e
+        hostname
+        whoami
+        df -h
+        pwd
+        # docker info
+        # docker version
+    - name: Test
+      run: |
+        test/test.sh
+
+  test-macos-11-0:
+    runs-on: macos-11.0
+    steps:
+    - uses: actions/checkout@v2
+    - name: Display system info (macos)
+      run: |
+        set -e
+        hostname
+        whoami
+        df -h
+        pwd
+        # docker info
+        # docker version
+    - name: Test
+      run: |
+        test/test.sh
+
+  ##########
+  # Docker #
+  ##########
+  test-alpine:
+    runs-on: ubuntu-16.04
+    container:
+      # image: theohbrothers/docker-powershell:6.0.2-ubuntu-16.04-git
+      image: alpine:latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Display system info (linux)
+      run: |
+        set -e
+        hostname
+        whoami
+        cat /etc/*release
+        lscpu
+        free
+        df -h
+        pwd
+    - name: Test
+      run: |
+        test/test.sh
+
+  update-draft-release:
+    needs: [test-ubuntu-20-04, test-ubuntu-18-04, test-ubuntu-16-04, test-macos-11-0, test-macos-10-15, test-alpine]
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      # Drafts your next Release notes as Pull Requests are merged into "master"
+      - uses: release-drafter/release-drafter@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
