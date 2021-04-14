@@ -119,7 +119,6 @@ jobs:
         hostname
         whoami
         cat /etc/*release
-        lscpu
         free
         df -h
         pwd
