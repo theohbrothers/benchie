@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -eu
+set -u
 
 # Test env
 BASE_DIR=$( pwd )
@@ -46,7 +46,7 @@ for bd in $BENCHMARK_DIR $BENCHMARK_DIR_REL; do
     echo "Expect a pid"
     echo "$STDOUT" | grep -E "[0-9]+" > "$TEST_STDOUT_FILE" && passed || failed
     echo "Expect pid to be running"
-    ps $STDOUT > /dev/null && passed || failed
+    kill -0 $STDOUT > /dev/null 2>&1 && passed || failed
 
     echo
     echo "[Test stop]"
@@ -55,7 +55,7 @@ for bd in $BENCHMARK_DIR $BENCHMARK_DIR_REL; do
     echo "Expect a pid"
     echo "$STDOUT" | grep -E "[0-9]+" > "$TEST_STDOUT_FILE" && passed || failed
     echo "Expect pid no longer exist"
-    ps $STDOUT > /dev/null && failed || passed
+    kill -0 $STDOUT > /dev/null 2>&1 && failed || passed
 
     echo
     echo "[Test clean]"
