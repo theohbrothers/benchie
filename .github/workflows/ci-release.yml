@@ -1,0 +1,156 @@
+name: ci-release
+
+on:
+  push:
+    branches:
+    - release
+    # tags:
+    # - 'v[0-9].[0-9]+.[0-9]+'
+
+jobs:
+  test-ubuntu-20-04:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Display system info (linux)
+      run: |
+        set -e
+        hostname
+        whoami
+        cat /etc/*release
+        lscpu
+        free
+        df -h
+        pwd
+        docker info
+        docker version
+    - name: Test
+      run: |
+        test/test.sh
+
+  test-ubuntu-18-04:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Display system info (linux)
+      run: |
+        set -e
+        hostname
+        whoami
+        cat /etc/*release
+        lscpu
+        free
+        df -h
+        pwd
+        docker info
+        docker version
+    - name: Test
+      run: |
+        test/test.sh
+
+  test-ubuntu-16-04:
+    runs-on: ubuntu-16.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Display system info (linux)
+      run: |
+        set -e
+        hostname
+        whoami
+        cat /etc/*release
+        lscpu
+        free
+        df -h
+        pwd
+        docker info
+        docker version
+    - name: Test
+      run: |
+        test/test.sh
+
+  test-macos-10-15:
+    runs-on: macos-10.15
+    steps:
+    - uses: actions/checkout@v2
+    - name: Display system info (macos)
+      run: |
+        set -e
+        hostname
+        whoami
+        df -h
+        pwd
+        # docker info
+        # docker version
+    - name: Test
+      run: |
+        test/test.sh
+
+  # test-macos-11-0:
+  #   runs-on: macos-11.0
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - name: Display system info (macos)
+  #     run: |
+  #       set -e
+  #       hostname
+  #       whoami
+  #       df -h
+  #       pwd
+  #       # docker info
+  #       # docker version
+  #   - name: Test
+  #     run: |
+  #       test/test.sh
+
+  ##########
+  # Docker #
+  ##########
+  test-alpine:
+    runs-on: ubuntu-16.04
+    container:
+      image: alpine:latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Display system info (linux)
+      run: |
+        set -e
+        hostname
+        whoami
+        cat /etc/*release
+        free
+        df -h
+        pwd
+    - name: Test
+      run: |
+        test/test.sh
+
+  converge-master-and-release-branches:
+    # needs: [test-ubuntu-20-04, test-ubuntu-18-04, test-ubuntu-16-04, test-macos-11-0, test-macos-10-15, test-alpine]
+    needs: [test-ubuntu-20-04, test-ubuntu-18-04, test-ubuntu-16-04, test-macos-10-15, test-alpine]
+    if: github.ref == 'refs/heads/release'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Merge release into master (fast-forward)
+        run: |
+          git checkout master
+          git merge release
+          git push origin master
+
+  publish-draft-release:
+    # needs: [test-ubuntu-20-04, test-ubuntu-18-04, test-ubuntu-16-04, test-macos-11-0, test-macos-10-15, test-alpine, converge-master-and-release-branches]
+    needs: [test-ubuntu-20-04, test-ubuntu-18-04, test-ubuntu-16-04, test-macos-10-15, test-alpine, converge-master-and-release-branches]
+    if: github.ref == 'refs/heads/release'
+    # if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    steps:
+      - id: release-drafter
+        uses: release-drafter/release-drafter@v5
+        with:
+          # config-name: release-drafter.yaml
+          publish: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
