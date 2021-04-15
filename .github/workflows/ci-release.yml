@@ -130,7 +130,8 @@ jobs:
         pwsh -NoLogo -NonInteractive -NoProfile -Command './test/test.ps1'
 
   converge-master-and-release-branches:
-    needs: [test-ubuntu-20-04, test-ubuntu-18-04, test-ubuntu-16-04, test-macos-11-0, test-macos-10-15, test-alpine]
+    # needs: [test-ubuntu-20-04, test-ubuntu-18-04, test-ubuntu-16-04, test-macos-11-0, test-macos-10-15, test-alpine]
+    needs: [test-ubuntu-20-04, test-ubuntu-18-04, test-ubuntu-16-04, test-macos-10-15, test-alpine]
     if: github.ref == 'refs/heads/release'
     runs-on: ubuntu-latest
     steps:
