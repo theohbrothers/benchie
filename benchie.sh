@@ -135,7 +135,7 @@ if [ "$COMMAND" = 'status' ]; then
     # Returns pid
     echo "$BENCHMARK_COMMANDS" | while read -r c; do
         # Exclude these args: 1) grep 2) zombie processes or kernel threads starting with square bracket i.e. [foo]'
-        for i in $( ps -Ao pid,args | grep "$c" | grep -vE '^\s*[0-9]+\s+(grep|\[)' | awk '{print $1}'); do echo "$i"; done
+        for i in $( ps -Ao pid,args | grep "$c" | grep -vE '^\s*[0-9]+\s+(grep|sh -c|\[)' | awk '{print $1}'); do echo "$i"; done
     done
 fi
 if [ "$COMMAND" = 'stop' ]; then
@@ -143,7 +143,7 @@ if [ "$COMMAND" = 'stop' ]; then
     # Returns killed pid
     echo "$BENCHMARK_COMMANDS" | while read -r c; do
         # Exclude these args: 1) grep 2) zombie processes or kernel threads starting with square bracket i.e. [foo]'
-        for i in $( ps -Ao pid,args | grep "$c" | grep -vE '^\s*[0-9]+\s+(grep|\[)' | awk '{print $1}'); do echo "$i"; kill -9 "$i"; done
+        for i in $( ps -Ao pid,args | grep "$c" | grep -vE '^\s*[0-9]+\s+(grep|sh -c|\[)' | awk '{print $1}'); do echo "$i"; kill -9 "$i"; done
     done
 fi
 if [ "$COMMAND" = 'clean' ]; then
