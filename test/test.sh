@@ -35,9 +35,9 @@ for bd in $BENCHMARK_DIR $BENCHMARK_DIR_REL; do
     echo "Expect an absolute path to benchmark data file"
     echo "$STDOUT" | grep -E "[a-zA-Z0-9_-]+.txt$" > /dev/null && passed || failed
     echo "Expect benchmark data file exists"
-    echo "$STDOUT" | cat - > /dev/null && passed || failed
+    ls $STDOUT > /dev/null && passed || failed
     echo "Expect content of benchmark data file"
-    echo "$STDOUT" | cat - > /dev/null  && passed || failed
+    cat $STDOUT && passed || failed
 
     echo
     echo "[Test status]"
