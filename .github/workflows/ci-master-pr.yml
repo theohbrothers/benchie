@@ -86,22 +86,22 @@ jobs:
       run: |
         test/test.sh
 
-  test-macos-11-0:
-    runs-on: macos-11.0
-    steps:
-    - uses: actions/checkout@v2
-    - name: Display system info (macos)
-      run: |
-        set -e
-        hostname
-        whoami
-        df -h
-        pwd
-        # docker info
-        # docker version
-    - name: Test
-      run: |
-        test/test.sh
+  # test-macos-11-0:
+  #   runs-on: macos-11.0
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - name: Display system info (macos)
+  #     run: |
+  #       set -e
+  #       hostname
+  #       whoami
+  #       df -h
+  #       pwd
+  #       # docker info
+  #       # docker version
+  #   - name: Test
+  #     run: |
+  #       test/test.sh
 
   ##########
   # Docker #
@@ -119,7 +119,6 @@ jobs:
         hostname
         whoami
         cat /etc/*release
-        lscpu
         free
         df -h
         pwd
@@ -128,7 +127,8 @@ jobs:
         test/test.sh
 
   update-draft-release:
-    needs: [test-ubuntu-20-04, test-ubuntu-18-04, test-ubuntu-16-04, test-macos-11-0, test-macos-10-15, test-alpine]
+    # needs: [test-ubuntu-20-04, test-ubuntu-18-04, test-ubuntu-16-04, test-macos-11-0, test-macos-10-15, test-alpine]
+    needs: [test-ubuntu-20-04, test-ubuntu-18-04, test-ubuntu-16-04, test-macos-10-15, test-alpine]
     if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:

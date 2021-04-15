@@ -1,0 +1,19 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "test (host)",
+            "type": "shell",
+            "command": "test/test.sh",
+            "group": "build"
+        },
+        {
+            "label": "test (docker)",
+            "type": "shell",
+            "command": "docker run --rm -it -v \"$(pwd):$(pwd)\" -w \"$(pwd)\" alpine test/test.sh",
+            "group": "build"
+        }
+    ]
+}

@@ -112,6 +112,12 @@ if [ -z "$BENCHMARK_COMMANDS" ]; then
     exit 1
 fi
 
+# OS-specific configuration
+OS_ALPINE=
+if cat /etc/os-release | grep -iE 'ID=alpine' > /dev/null 2>&1; then
+    OS_ALPINE='true'
+fi
+
 ## Create directories
 mkdir -p "$BENCHMARK_DATA_DIR"
 
@@ -134,14 +140,24 @@ if [ "$COMMAND" = 'status' ]; then
     # Get running benchmarks
     # Returns pid
     echo "$BENCHMARK_COMMANDS" | while read -r c; do
-        for i in $( ps aux | grep "$c" | grep -v grep | awk '{print $2}'); do echo "$i"; done
+        # Exclude these args: 1) grep 2) zombie processes or kernel threads starting with square bracket i.e. [foo]'
+        if [ "$OS_ALPINE" = 'true' ]; then
+            for i in $( ps aux | grep "$c" | grep -vE '^\s*[0-9]+\s+(grep|\[)' | awk '{print $1}'); do echo "$i"; done
+        else
+            for i in $( ps aux | grep "$c" | grep -vE '^\s*[0-9]+\s+(grep|\[)' | awk '{print $2}'); do echo "$i"; done
+        fi
     done
 fi
 if [ "$COMMAND" = 'stop' ]; then
     # Stops benchmarks
     # Returns killed pid
     echo "$BENCHMARK_COMMANDS" | while read -r c; do
-        for i in $( ps aux | grep "$c" | grep -v grep | awk '{print $2}'); do echo "$i"; kill -9 "$i"; done
+        # Exclude these args: 1) grep 2) zombie processes or kernel threads starting with square bracket i.e. [foo]'
+        if [ "$OS_ALPINE" = 'true' ]; then
+            for i in $( ps aux | grep "$c" | grep -vE '^\s*[0-9]+\s+(grep|\[)' | awk '{print $1}'); do echo "$i"; kill -9 "$i"; done
+        else
+            for i in $( ps aux | grep "$c" | grep -vE '^\s*[0-9]+\s+(grep|\[)' | awk '{print $2}'); do echo "$i"; kill -9 "$i"; done
+        fi
     done
 fi
 if [ "$COMMAND" = 'clean' ]; then
