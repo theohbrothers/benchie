@@ -10,6 +10,7 @@ BENCHMARK="my-benchmark"
 BENCHMARK_DIR_REL="$TEST_DIR_BASENAME/$BENCHMARK"
 BENCHMARK_DIR="$TEST_DIR/$BENCHMARK"
 BENCHMARK_DATA_DIR="$TEST_DIR/$BENCHMARK/data"
+TEST_STDOUT_FILE="$TEST_DIR/.stdout"
 
 pass=0
 fail=0
@@ -20,14 +21,15 @@ passed() {
 failed() {
     echo 'fail' && fail=$( expr $fail + 1 ) && total=$( expr $total + 1 )
 }
-
+cleanup() {
+    rm -f "$TEST_STDOUT_FILE"
+}
 
 #
 # Relative benchmark directory
 #
 
 echo
-TEST_STDOUT_FILE="$TEST_DIR/.stdout"
 echo "[Test start]"
 for bd in $BENCHMARK_DIR $BENCHMARK_DIR_REL; do
     ./benchie.sh start "$bd" > "$TEST_STDOUT_FILE"
@@ -38,6 +40,7 @@ for bd in $BENCHMARK_DIR $BENCHMARK_DIR_REL; do
     ls $STDOUT > /dev/null && passed || failed
     echo "Expect content of benchmark data file"
     cat $STDOUT && passed || failed
+    cleanup
 
     echo
     echo "[Test status]"
@@ -47,6 +50,7 @@ for bd in $BENCHMARK_DIR $BENCHMARK_DIR_REL; do
     echo "$STDOUT" | grep -E "[0-9]+" > "$TEST_STDOUT_FILE" && passed || failed
     echo "Expect pid to be running"
     kill -0 $STDOUT > /dev/null 2>&1 && passed || failed
+    cleanup
 
     echo
     echo "[Test stop]"
@@ -56,6 +60,7 @@ for bd in $BENCHMARK_DIR $BENCHMARK_DIR_REL; do
     echo "$STDOUT" | grep -E "[0-9]+" > "$TEST_STDOUT_FILE" && passed || failed
     echo "Expect pid no longer exist"
     kill -0 $STDOUT > /dev/null 2>&1 && failed || passed
+    cleanup
 
     echo
     echo "[Test clean]"
@@ -65,10 +70,8 @@ for bd in $BENCHMARK_DIR $BENCHMARK_DIR_REL; do
     echo "$STDOUT" | grep -E "[a-zA-Z0-9_-]+.txt$" > /dev/null && passed || failed
     echo "Expect benchmark data directory to be clean"
     ls test/my-benchmark/data/ | wc -l | awk '{print $1}' | grep -E '^0$' > /dev/null && passed || failed
+    cleanup
 done
-
-## Cleanup
-rm -f "$TEST_STDOUT_FILE"
 
 echo
 echo "[Summary]"
