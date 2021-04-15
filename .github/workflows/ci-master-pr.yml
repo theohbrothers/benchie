@@ -109,7 +109,6 @@ jobs:
   test-alpine:
     runs-on: ubuntu-16.04
     container:
-      # image: theohbrothers/docker-powershell:6.0.2-ubuntu-16.04-git
       image: alpine:latest
     steps:
     - uses: actions/checkout@v2

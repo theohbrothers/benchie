@@ -108,8 +108,7 @@ jobs:
   test-alpine:
     runs-on: ubuntu-16.04
     container:
-      # image: theohbrothers/docker-powershell:7.2.0-preview.4-alpine-3.11-20210316-git
-      image: mcr.microsoft.com/powershell:7.2.0-preview.4-alpine-3.11-20210316
+      image: alpine:latest
     steps:
     - uses: actions/checkout@v2
     - name: Display system info (linux)
@@ -118,16 +117,12 @@ jobs:
         hostname
         whoami
         cat /etc/*release
-        # lscpu
         free
         df -h
         pwd
-    - name: Powershell version
-      run: |
-        pwsh -NoLogo -NonInteractive -NoProfile -Command '$PSVersionTable'
     - name: Test
       run: |
-        pwsh -NoLogo -NonInteractive -NoProfile -Command './test/test.ps1'
+        test/test.sh
 
   converge-master-and-release-branches:
     # needs: [test-ubuntu-20-04, test-ubuntu-18-04, test-ubuntu-16-04, test-macos-11-0, test-macos-10-15, test-alpine]
