@@ -46,8 +46,8 @@ for bd in $BENCHMARK_DIR $BENCHMARK_DIR_REL; do
     echo "[Test status]"
     ./benchie.sh status "$bd" > "$TEST_STDOUT_FILE"
     STDOUT=$( cat "$TEST_STDOUT_FILE" )
-    echo "Expect a pid"
-    echo "$STDOUT" | grep -E "[0-9]+" > "$TEST_STDOUT_FILE" && passed || failed
+    echo "Expect 2 pids"
+    [ $( echo "$STDOUT" | grep -E "[0-9]+" | wc -l ) = 2 ] && passed || failed
     # echo "Expect pid to be running"
     # kill -0 $STDOUT > /dev/null && passed || failed
     cleanup
@@ -56,8 +56,8 @@ for bd in $BENCHMARK_DIR $BENCHMARK_DIR_REL; do
     echo "[Test stop]"
     ./benchie.sh stop "$bd" > "$TEST_STDOUT_FILE"
     STDOUT=$( cat "$TEST_STDOUT_FILE" )
-    echo "Expect a pid"
-    echo "$STDOUT" | grep -E "[0-9]+" > "$TEST_STDOUT_FILE" && passed || failed
+    echo "Expect two pids"
+    [ $( echo "$STDOUT" | grep -E "[0-9]+" | wc -l ) = 2 ] && passed || failed
     # echo "Expect pid no longer exist"
     # kill -0 $STDOUT > /dev/null 2>&1 && failed || passed
     cleanup
