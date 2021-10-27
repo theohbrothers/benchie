@@ -1,7 +1,7 @@
 # benchie
 
 [![github-actions](https://github.com/theohbrothers/benchie/workflows/ci-master-pr/badge.svg)](https://github.com/theohbrothers/benchie/actions)
-[![github-tag](https://img.shields.io/github/tag/theohbrothers/benchie)](https://github.com/theohbrothers/benchie/releases/)
+[![github-release](https://img.shields.io/github/v/release/theohbrothers/benchie?style=flat-square)](https://github.com/theohbrothers/benchie/releases/)
 <!-- [![docker-image-size](https://img.shields.io/docker/image-size/theohbrothers/benchie/latest)](https://hub.docker.com/r/theohbrothers/benchie) -->
 
 A simple benchmarking tool.
